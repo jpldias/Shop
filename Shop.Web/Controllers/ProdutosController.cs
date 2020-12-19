@@ -1,40 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Web.Data;
 using Shop.Web.Data.Entidades;
+using System.Threading.Tasks;
 
 namespace Shop.Web.Controllers
 {
     public class ProdutosController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IRepository repository;
 
-        public ProdutosController(DataContext context)
+        public ProdutosController(IRepository repository)
         {
-            _context = context;
+            this.repository = repository;
         }
 
         // GET: Produtos
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Produtos.ToListAsync());
+            return View(this.repository.GetProdutos());
         }
 
         // GET: Produtos/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var produtos = await _context.Produtos
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var produtos = this.repository.GetProdutos(id.Value);
+
             if (produtos == null)
             {
                 return NotFound();
@@ -58,22 +54,22 @@ namespace Shop.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(produtos);
-                await _context.SaveChangesAsync();
+                this.repository.AppProdutos(produtos);
+                await this.repository.SaveAllAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(produtos);
         }
 
         // GET: Produtos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var produtos = await _context.Produtos.FindAsync(id);
+            var produtos = this.repository.GetProdutos(id.Value);
             if (produtos == null)
             {
                 return NotFound();
@@ -88,21 +84,17 @@ namespace Shop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ImageUrl,LastPurchase,LastSale,IsAvailable,Stock")] Produtos produtos)
         {
-            if (id != produtos.Id)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(produtos);
-                    await _context.SaveChangesAsync();
+                    this.repository.UpdateProdutos(produtos);
+                    await this.repository.SaveAllAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProdutosExists(produtos.Id))
+                    if (!this.repository.ProdutosExists(produtos.Id))
                     {
                         return NotFound();
                     }
@@ -117,15 +109,14 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Produtos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var produtos = await _context.Produtos
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var produtos = this.repository.GetProdutos(id.Value);
             if (produtos == null)
             {
                 return NotFound();
@@ -139,15 +130,12 @@ namespace Shop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var produtos = await _context.Produtos.FindAsync(id);
-            _context.Produtos.Remove(produtos);
-            await _context.SaveChangesAsync();
+            var produtos = this.repository.GetProdutos(id);
+            this.repository.RemoveProdutos(produtos);
+            await this.repository.SaveAllAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProdutosExists(int id)
-        {
-            return _context.Produtos.Any(e => e.Id == id);
-        }
+
     }
 }
