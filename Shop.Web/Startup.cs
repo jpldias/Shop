@@ -27,11 +27,19 @@ namespace Shop.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
+
+
+
             services.AddDbContext<DataContext>(cfg =>
             {
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
             }
           );
+
+            services.AddTransient<SeedDb>();
+
+
+
 
 
 
