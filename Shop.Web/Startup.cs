@@ -29,11 +29,17 @@ namespace Shop.Web
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
             }
           );
-
+            //seed de produtos
             services.AddTransient<SeedDb>();
 
             // trocando o Repository pelo TestRepository pode se fazer teste aos produtos 
-            services.AddScoped<IRepository, Repository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+
+
+
+            services.AddScoped<ICountryRepository, CountryRepository>();
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {

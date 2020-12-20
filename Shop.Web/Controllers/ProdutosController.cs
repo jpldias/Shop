@@ -2,34 +2,35 @@
 using Microsoft.EntityFrameworkCore;
 using Shop.Web.Data;
 using Shop.Web.Data.Entidades;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shop.Web.Controllers
 {
     public class ProdutosController : Controller
     {
-        private readonly IRepository repository;
+        public readonly IProductRepository productRepository;
 
-        public ProdutosController(IRepository repository)
+        public ProdutosController(IProductRepository productRepository)
         {
-            this.repository = repository;
+            this.productRepository = productRepository;
         }
 
         // GET: Produtos
         public IActionResult Index()
         {
-            return View(this.repository.GetProdutos());
+            return View(this.productRepository.GetAll()/*.OrderBy(p =>p.Name)*/);
         }
 
         // GET: Produtos/Details/5
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var produtos = this.repository.GetProdutos(id.Value);
+            var produtos = await this.productRepository.GetByIdAsync(id.Value);
 
             if (produtos == null)
             {
@@ -54,22 +55,21 @@ namespace Shop.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                this.repository.AppProdutos(produtos);
-                await this.repository.SaveAllAsync();
+                await this.productRepository.CreateAsync(produtos);
                 return RedirectToAction(nameof(Index));
             }
             return View(produtos);
         }
 
         // GET: Produtos/Edit/5
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult>  Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var produtos = this.repository.GetProdutos(id.Value);
+            var produtos = await this.productRepository.GetByIdAsync(id.Value);
             if (produtos == null)
             {
                 return NotFound();
@@ -89,12 +89,12 @@ namespace Shop.Web.Controllers
             {
                 try
                 {
-                    this.repository.UpdateProdutos(produtos);
-                    await this.repository.SaveAllAsync();
+                    await this.productRepository.UpdateAsync(produtos);
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!this.repository.ProdutosExists(produtos.Id))
+                    if (!await this.productRepository.ExistsAsync(produtos.Id))
                     {
                         return NotFound();
                     }
@@ -109,14 +109,14 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Produtos/Delete/5
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var produtos = this.repository.GetProdutos(id.Value);
+            var produtos = await this.productRepository.GetByIdAsync(id.Value);
             if (produtos == null)
             {
                 return NotFound();
@@ -130,9 +130,8 @@ namespace Shop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var produtos = this.repository.GetProdutos(id);
-            this.repository.RemoveProdutos(produtos);
-            await this.repository.SaveAllAsync();
+            var produtos = await this.productRepository.GetByIdAsync(id);
+            await this.productRepository.DeleteAsync(produtos);
             return RedirectToAction(nameof(Index));
         }
 
