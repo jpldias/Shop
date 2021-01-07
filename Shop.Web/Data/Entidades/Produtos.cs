@@ -39,5 +39,21 @@ namespace Shop.Web.Data.Entidades
 
 
         public User User { get; set; }
+
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.ImageUrl))
+                {
+                    return null;
+                }
+
+
+                //por a morada do site !!!!!!! e tirar o localhost
+
+                return $"https://localhost:44394{this.ImageUrl.Substring(1)}";
+            }
+        }
     }
 }
