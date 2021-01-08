@@ -57,7 +57,7 @@ namespace Shop.Web
             // trocando o Repository pelo TestRepository pode se fazer teste aos produtos 
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICountryRepository, CountryRepository>();
-            services.AddScoped<IUserHelper, userHelper>();
+            services.AddScoped<IUserHelper, UserHelper>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -85,6 +85,7 @@ namespace Shop.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>

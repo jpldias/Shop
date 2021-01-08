@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Web.Data;
 using Shop.Web.Data.Entidades;
@@ -11,6 +12,10 @@ using System.Threading.Tasks;
 
 namespace Shop.Web.Controllers
 {
+
+
+    //só entra nos produtos se tiver logado com o authorize por baixo e nostros campos obriga a fazer login que é o caso so creat edit e delete
+    //[Authorize]  tirei este para se poder ver os produtos mas em baixo é obrigado a logar
     public class ProdutosController : Controller
     {
         public readonly IProductRepository productRepository;
@@ -47,6 +52,10 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Produtos/Create
+
+
+
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -114,6 +123,8 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Produtos/Edit/5
+
+        [Authorize]
         public async Task<IActionResult>  Edit(int? id)
         {
             if (id == null)
@@ -214,6 +225,8 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Produtos/Delete/5
+
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
