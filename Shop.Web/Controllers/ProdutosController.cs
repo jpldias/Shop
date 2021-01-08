@@ -96,8 +96,8 @@ namespace Shop.Web.Controllers
 
                 var produtos = this.ToProducts(view, path);
 
-                //TODO: change for the logged user
-                produtos.User = await this.userHelper.GetUserByEmailAsync("jpldias13@gmail.com");
+               
+                produtos.User = await this.userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
 
                 await this.productRepository.CreateAsync(produtos);
@@ -202,8 +202,8 @@ namespace Shop.Web.Controllers
 
                         var produtos = this.ToProducts(view, path);
 
-                        //TODO: change for the logged user
-                        produtos.User = await this.userHelper.GetUserByEmailAsync("jpldias13@gmail.com");
+                        
+                        produtos.User = await this.userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                         await this.productRepository.UpdateAsync(produtos);
 
                     }
