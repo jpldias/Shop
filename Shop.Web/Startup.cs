@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shop.Web.Data;
 using Shop.Web.Data.Entidades;
 using Shop.Web.Helpers;
+using Store.Web.Helpers;
 
 namespace Shop.Web
 {

@@ -25,6 +25,12 @@ namespace Shop.Web.Data
         {
             await this.context.Database.EnsureCreatedAsync();
 
+
+            await this.userHelper.CheckRoleAsync("Admin");
+            await this.userHelper.CheckRoleAsync("Customer");
+
+
+
             var user = await this.userHelper.GetUserByEmailAsync("jpldias13@gmail.com");
             if (user == null)
             {
@@ -44,8 +50,18 @@ namespace Shop.Web.Data
                     throw new InvalidOperationException("Nao conseguiu criar o utilizador na seed");
                 }
 
+
+                await this.userHelper.AddUserToRoleAsync(user, "Admin");
+
             }
-             
+            var isRole = await this.userHelper.IsUserInRoleAsync(user, "Admin");
+
+            if (!isRole)
+            {
+                await this.userHelper.AddUserToRoleAsync(user, "Admin");
+            }
+
+
             if (!this.context.Produtos.Any())
             {
                 this.AddProdutos("Equipamentos Official SlB", user);

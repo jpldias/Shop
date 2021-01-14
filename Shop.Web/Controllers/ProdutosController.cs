@@ -55,7 +55,7 @@ namespace Shop.Web.Controllers
 
 
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -124,7 +124,7 @@ namespace Shop.Web.Controllers
 
         // GET: Produtos/Edit/5
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult>  Edit(int? id)
         {
             if (id == null)
@@ -166,7 +166,7 @@ namespace Shop.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ImageFile,LastPurchase,LastSale,IsAvailable,Stock")] ProductsViewModel view)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ImageFile,ImageUrl,LastPurchase,LastSale,IsAvailable,Stock")] ProductsViewModel view)
         {
 
             if (ModelState.IsValid)
@@ -226,7 +226,7 @@ namespace Shop.Web.Controllers
 
         // GET: Produtos/Delete/5
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
